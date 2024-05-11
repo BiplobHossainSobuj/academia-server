@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 // const uri = "mongodb+srv://<username>:<password>@cluster0.bswbr7l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bswbr7l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -30,6 +30,7 @@ async function run() {
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     const serviceCollection = client.db('academiaDB').collection("services");
+    const servicePurchasedCollection= client.db('academiaDB').collection("purchased")
     // all services 
     app.get('/services',async(req,res)=>{
       const cursor = serviceCollection.find();
@@ -42,6 +43,20 @@ async function run() {
       res.send(result);
     })
     
+    // get service by id 
+    app.get('/services/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)}
+      const result = await serviceCollection.findOne(query);
+      res.send(result);
+    })
+
+    // purchase survices
+    app.post('/servicePurchased',async(req,res)=>{
+      const purchaseDetails = req.body;
+      const result = await servicePurchasedCollection.insertOne(purchaseDetails);
+      res.send(result);
+    })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
