@@ -57,6 +57,22 @@ async function run() {
       const result = await servicePurchasedCollection.insertOne(purchaseDetails);
       res.send(result);
     })
+    //manage services
+    app.get('/manageServices',async(req,res)=>{
+      let query = {};
+      if(req.query?.email){
+        query={providerEmail:req.query.email}
+      }
+      const result = await serviceCollection.find(query).toArray();
+      res.send(result);
+    })
+    // delete service 
+    app.delete('/delete/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id:new ObjectId(id)}
+      const result = await serviceCollection.deleteOne(query);
+      res.send(result);
+    })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
