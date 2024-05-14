@@ -52,9 +52,42 @@ async function run() {
     })
 
     // purchase survices
+    app.get('/servicePurchased',async(req,res)=>{
+      let query = {};
+      if(req.query?.email){
+        query= {userEmail:req.query.email}
+      }
+      const result = await servicePurchasedCollection.find(query).toArray();
+      res.send(result);
+    })
     app.post('/servicePurchased',async(req,res)=>{
       const purchaseDetails = req.body;
       const result = await servicePurchasedCollection.insertOne(purchaseDetails);
+      res.send(result);
+    })
+    //service status-->handle service status
+    app.get('/serviceToDo',async(req,res)=>{
+      let query = {};
+      if(req.query?.email){
+        query= {providerEmail:req.query.email}
+      }
+      const result = await servicePurchasedCollection.find(query).toArray();
+      res.send(result);
+    })
+    // update status 
+    app.patch('/serviceToDo/:id',async(req,res)=>{
+      const id = req.params.id;
+      console.log(req.body);
+      const doc = req.body;
+      const filter = {_id:new ObjectId(id)};
+      const option = {upsert:true};
+      const updatedDoc= {
+        $set:{
+          status:doc.serviceStatus
+        }
+      };
+      const result = await servicePurchasedCollection.updateOne(filter,updatedDoc,option);
+      // console.log(result);
       res.send(result);
     })
     //manage services
@@ -71,6 +104,25 @@ async function run() {
       const id = req.params.id;
       const query = {_id:new ObjectId(id)}
       const result = await serviceCollection.deleteOne(query);
+      res.send(result);
+    })
+    //update service
+     app.put('/services/:id', async (req, res) => {
+      const id = req.params.id;
+      const doc = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const option = {upsert:true};
+      const updatedDoc = {
+        $set:{
+          serviceName:doc.serviceName,
+          serviceImage:doc.serviceImage,
+          serviceArea:doc.serviceArea,
+          description:doc.description,
+          servicePrice:doc.servicePrice
+        }
+      }
+      const result = await serviceCollection.updateOne(filter,updatedDoc,option);
+      // console.log(result);
       res.send(result);
     })
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
