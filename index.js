@@ -31,6 +31,7 @@ async function run() {
     // await client.db("admin").command({ ping: 1 });
     const serviceCollection = client.db('academiaDB').collection("services");
     const servicePurchasedCollection= client.db('academiaDB').collection("purchased")
+    const requestedServiceCollection = client.db('academiaDB').collection("service-request")
     // all services 
     app.get('/services',async(req,res)=>{
       const cursor = serviceCollection.find();
@@ -40,6 +41,12 @@ async function run() {
     app.post('/services',async(req,res)=>{
       const serviceDetails = req.body;
       const result = await serviceCollection.insertOne(serviceDetails);
+      res.send(result);
+    })
+    // requested service 
+    app.post('/requestedServices',async(req,res)=>{
+      const serviceDetails = req.body;
+      const result = await requestedServiceCollection.insertOne(serviceDetails);
       res.send(result);
     })
     
