@@ -119,7 +119,7 @@ async function run() {
       const result = await servicePurchasedCollection.find(query).toArray();
       res.send(result);
     })
-    app.post('/servicePurchased',verifyToken, async (req, res) => {
+    app.post('/servicePurchased', async (req, res) => {
       const purchaseDetails = req.body;
       const result = await servicePurchasedCollection.insertOne(purchaseDetails);
       res.send(result);
